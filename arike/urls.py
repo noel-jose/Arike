@@ -16,8 +16,38 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include, path
+from django.contrib.auth.views import LogoutView
+
+from apps.views import (
+    FacilityDeleteView,
+    FacilityDetailView,
+    FacilityUpdateView,
+    UserUpdateView,
+    UsersCreateView,
+    UsersListView,
+    UserLoginView,
+    UserDetailView,
+    UserDeleteView,
+    FacilityListView,
+    FacilityCreateView,
+)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
+    path("login", UserLoginView.as_view()),
+    path("logout", LogoutView.as_view()),
+    # urls for distadmin user views
+    path("list/users", UsersListView.as_view()),
+    path("create/user", UsersCreateView.as_view()),
+    path("update/user/<pk>", UserUpdateView.as_view()),
+    path("detail/user/<pk>", UserDetailView.as_view()),
+    path("delete/user/<pk>", UserDeleteView.as_view()),
+    # urls for distadmin facility views
+    path("list/facility", FacilityListView.as_view()),
+    path("create/facility", FacilityCreateView.as_view()),
+    path("update/facility/<pk>", FacilityUpdateView.as_view()),
+    path("detail/facility/<pk>", FacilityDetailView.as_view()),
+    path("delete/facility/<pk>", FacilityDeleteView.as_view()),
 ]

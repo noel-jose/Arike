@@ -115,7 +115,7 @@ class CustomUser(AbstractUser):
     deleted = models.BooleanField(default=False)
 
     def get_full_name(self):
-        return self.first_name + " " + self.last_name
+        return self.super.first_name + " " + self.super.last_name
 
 
 GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Non-binary", "Non-binary")]

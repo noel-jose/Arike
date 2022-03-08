@@ -1,0 +1,48 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">{{ object.username }}</h1>
+        <div>
+            <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/user/{{ object.id }}">Edit</a>
+            <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/user/{{ object.id }}">Delete</a>
+        </div>
+    </div>
+
+    <div class="flex flex-col">
+        <h1 class="text-gray-800 font-semibold text-4xl my-6">Profile</h1>
+        <div class="flex flex-row justify-start my-6  ">
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">Full Name </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.full_name }}</p>
+            </div>
+            <div class="bg-white pr-32 pl-3 py-3 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">UserName </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.username }}</p>
+            </div>
+        </div>
+
+        <div class="flex flex-row justify-start my-6 ">
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">Email </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.email }}</p>
+            </div>
+            <div class="bg-white pr-32 pl-3 py-3 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">Phone Number </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.phone }}</p>
+            </div>
+        </div>
+        
+        <h1 class="text-gray-800 font-semibold text-4xl my-6">Facility</h1>
+        <div class="bg-white pr-32 pl-3 py-3 rounded-lg mr-24">
+            <p class="text-gray-600 font-light text-md">Facility </p>
+            <p class="text-gray-700 font-regular text-lg">{{ object.facility }}</p>
+        </div>
+
+        <h1 class="text-gray-800 font-semibold text-4xl my-6">Role</h1>
+        <div class="bg-white pr-32 pl-3 py-3 rounded-lg mr-24">
+            <p class="text-gray-600 font-light text-md">Role </p>
+            <p class="text-gray-700 font-regular text-lg">{{ object.role }}</p>
+        </div>
+    </div>
+    
+{% endblock content %}

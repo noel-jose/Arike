@@ -1,0 +1,42 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">{{ object.name }}</h1>
+        <div>
+            <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/facility/{{ object.id }}">Edit</a>
+            <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/facility/{{ object.id }}">Delete</a>
+        </div>
+    </div>
+
+    <div class="flex flex-col">
+        <h1 class="text-gray-800 font-semibold text-4xl my-6">{{ object.kind }}</h1>
+        
+        <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24">
+            <p class="text-gray-600 font-light text-md">Name </p>
+            <p class="text-gray-700 font-regular text-lg">{{ object.name }}</p>
+        </div>
+
+        <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+            <p class="text-gray-600 font-light text-md">Address </p>
+            <p class="text-gray-700 font-regular text-lg">{{ object.address }}</p>
+        </div>
+
+        <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+            <p class="text-gray-600 font-light text-md">Ward</p>
+            <p class="text-gray-700 font-regular text-lg">{{ object.ward }}</p>
+        </div>
+
+        <div class="flex flex-row justify-start my-6 ">
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">Pincode </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.pincode }}</p>
+            </div>
+            <div class="bg-white pr-32 pl-3 py-3 rounded-lg mr-24">
+                <p class="text-gray-600 font-light text-md">Phone Number </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.phone }}</p>
+            </div>
+        </div>
+        
+    </div>
+    
+{% endblock content %}

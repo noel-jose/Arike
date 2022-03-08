@@ -1,0 +1,47 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+    
+<head>
+    <title>Arike</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% tailwind_css %}
+ </head>
+
+ <body>
+    <div class="grid grid-cols-2 w-screen h-screen">
+        <div class="bg-gray-500 h-100 flex items-center justify-center">
+        <div class="text-center">
+            <p class="font-bold text-8xl text-white m-2">Arike</p>
+            <p class="text-white">Lorem ipsum dolor sit amet, consectetur elit.</p>
+        </div>
+        </div>
+        <div class="bg-white-600 h-100 flex items-center justify-center">
+        <div class="text-left">
+            <p class="font-regular text-2xl text-grey m-2">Authorized login</p>
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="fieldWrapper m-4">
+                        <div class="text-l font-semibold mb-2">{{ field.label_tag }}</div> 
+                        <div>{{ field }}</div>
+                        {% if field.help_text %}
+                        <p class="help text-sm">*{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                        <p class="help text-sm text-red-400">*{{ field.errors|safe }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="text-center mt-6">
+                    <Button class="bg-gray-500 w-5/6 text-white p-2 rounded-md " type="submit">Login</Button>
+                </div>
+                
+            </form>
+        </div>
+        </div>
+    </div>
+</body>
+
+</html>

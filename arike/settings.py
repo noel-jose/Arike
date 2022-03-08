@@ -59,7 +59,7 @@ ROOT_URLCONF = "arike.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -134,3 +134,7 @@ INTERNAL_IPS = [
 ]
 
 AUTH_USER_MODEL = "apps.CustomUser"
+
+LOGIN_REDIRECT_URL = "/tasks"
+LOGIN_URL = "/login"
+LOGOUT_REDIRECT_URL = "/"
