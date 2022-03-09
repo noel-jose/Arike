@@ -1,0 +1,41 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">{{ object.full_name }}</h1>
+        <div>
+            <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/patient/{{ object.id }}">Edit</a>
+            <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/patient/{{ object.id }}">Delete</a>
+        </div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-gray-800 my-6">Personal Information</h1>
+    <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24">
+        <h1 class="text-2xl font-bold text-gray-800 mt-6 p-2">{{ object.full_name }}</h1>
+        <p class="text-gray-700 font-regular text-lg px-2">{{ object.address }}</p>
+        <div class="grid grid-cols-2 ">
+        
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+                <p class="text-gray-600 font-bold text-md">Phone Number </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.phone }}</p>
+            </div>
+    
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+                <p class="text-gray-600 font-bold text-md">Emergeny Phone Number </p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.emergency_phone_number }}</p>
+            </div>
+    
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+                <p class="text-gray-600 font-bold text-md">Gender</p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.gender }}</p>
+            </div>
+
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+                <p class="text-gray-600 font-bold text-md">Ward</p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.ward }}</p>
+            </div>
+            
+        </div>
+    </div>
+    
+    
+{% endblock content %}

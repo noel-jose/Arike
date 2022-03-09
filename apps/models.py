@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import TreeBuilder
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
@@ -131,12 +132,17 @@ class Patient(models.Model):
     emergency_phone_number = models.CharField(
         max_length=14, validators=[phone_number_regex]
     )
-    expired_time = models.DateTimeField(blank=True)
+    expired_time = models.DateTimeField(blank=True, null=True)
     ward = models.ForeignKey(Ward, on_delete=models.PROTECT)
-    nurse = models.ForeignKey(CustomUser, blank=False, on_delete=models.PROTECT)
+    nurse = models.ForeignKey(
+        CustomUser, blank=False, on_delete=models.PROTECT, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.full_name
 
 
 RELATION = (
@@ -179,8 +185,18 @@ class VisitSchedule(models.Model):
     deleted = models.BooleanField(default=False)
 
 
+PALLIATIVE_PHASES = (
+    ("Stable", "Stable"),
+    ("Unstable", "Unstable"),
+    ("Deteriorating", "Deteriorating"),
+    ("Dying", "Dying"),
+)
+
+
 class VisitDetails(models.Model):
-    pallative_phase = models.CharField(max_length=100)
+    pallative_phase = models.CharField(
+        max_length=100, choices=PALLIATIVE_PHASES, default=PALLIATIVE_PHASES[0][1]
+    )
     blood_pressure = models.IntegerField()
     pulse = models.IntegerField()
     General_Random_Blood_Sugar = models.CharField(max_length=6)
