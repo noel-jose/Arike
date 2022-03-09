@@ -1,0 +1,59 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">Family Details</h1>
+        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/family/{{ objects.patient.id }}">New</a>
+    </div>
+    
+
+    <div class="flex ">
+        {% for object in objects %}
+        <div class="px-3 py-2 bg-white m-2 rounded-md">
+            <div class="flex justify-between my-6">
+                <p class="font-semibold text-xl px-2">{{ object.full_name }}</p>
+                <p class="font-semibold px-2 ">{{ object.relation }}</p>
+            </div>
+            <div class="text-gray-600 px-2 py-2">
+                Address : {{ object.address }}
+            </div>
+            <div class="grid grid-cols-2 ">
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Phone</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.phone}}</p>
+                </div>
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Email</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.email }}</p>
+                </div>
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Date of Birth</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.date_of_birth }}</p>
+                </div>
+    
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Occupation</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.occupation }}</p>
+                </div>
+    
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Education</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.education }}</p>
+                </div>
+                
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Remark</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.patient.id }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/family/{{ object.id }}">Edit</a>
+                    <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/family/{{ object.id }}">Delete</a>
+                </div>
+            </div>
+        </div>
+            
+        {% endfor %}
+    </div>
+{% endblock content %}

@@ -2,7 +2,7 @@ from operator import mod
 from pyexpat import model
 from django.shortcuts import render
 
-from .models import CustomUser, Facility, Patient
+from .models import CustomUser, Facility, FamilyDetail, Patient
 
 # Create your views here.
 
@@ -196,6 +196,7 @@ class PatientForm(ModelForm):
             "landmark",
             "gender",
             "ward",
+            "facility",
             "expired_time",
         ]
         labels = {"expired_time": "Death time"}
@@ -245,6 +246,104 @@ class PatientDeleteView(DeleteView):
     model = Patient
     template_name = "Patient/delete.html"
     success_url = "/list/patient"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
+
+"""
+
+        Creating views for Family Details
+
+"""
+
+
+class FamilyForm(ModelForm):
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = FamilyDetail
+        fields = [
+            "full_name",
+            "date_of_birth",
+            "phone",
+            "email",
+            "address",
+            "relation",
+            "gender",
+            "education",
+            "occupation",
+            "remarks",
+            "is_primary",
+        ]
+        labels = {"is_primary": "Primary contact for Patient"}
+        widgets = {
+            "date_of_birth": forms.DateInput(
+                format=("%Y-%m-%d"),
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Select a date",
+                    "type": "date",
+                },
+            ),
+        }
+
+
+class FamilyCreateView(CreateView):
+    model = FamilyDetail
+    form_class = FamilyForm
+    template_name = "FamilyDetails/create.html"
+    success_url = "/dashboard"
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(FamilyCreateView, self).get_context_data(**kwargs)
+    #     context["patient_id"] = self.kwargs["patient_id"]
+    #     return context
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        patient_id = self.kwargs["patient_id"]
+        patient = Patient.objects.get(pk=patient_id)
+        self.object.patient = patient
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class FamilyListView(ListView):
+    model = FamilyDetail
+    template_name = "FamilyDetails/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        patient_id = self.kwargs["patient_id"]
+        print(patient_id)
+        patient = Patient.objects.get(pk=patient_id)
+        objects = FamilyDetail.objects.filter(deleted=False, patient=patient)
+        print(objects)
+        return objects
+
+
+class FamilyUpdateView(UpdateView):
+    model = FamilyDetail
+    form_class = FamilyForm
+    template_name = "FamilyDetails/update.html"
+    success_url = "/list/patient"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class FamilyDeleteView(DeleteView):
+    model = FamilyDetail
+    template_name = "FamilyDetails/delete.html"
+    success_url = "/list/family"
 
     def form_valid(self, form):
         success_url = self.get_success_url()

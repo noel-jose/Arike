@@ -22,6 +22,10 @@ from apps.views import (
     FacilityDeleteView,
     FacilityDetailView,
     FacilityUpdateView,
+    FamilyCreateView,
+    FamilyDeleteView,
+    FamilyListView,
+    FamilyUpdateView,
     PatientCreateView,
     PatientDeleteView,
     PatientDetailView,
@@ -61,4 +65,9 @@ urlpatterns = [
     path("update/patient/<pk>", PatientUpdateView.as_view()),
     path("detail/patient/<pk>", PatientDetailView.as_view()),
     path("delete/patient/<pk>", PatientDeleteView.as_view()),
+    # urls for family detail views
+    path("create/family/<int:patient_id>", FamilyCreateView.as_view()),
+    path("list/family/<int:patient_id>", FamilyListView.as_view()),
+    path("update/family/<pk>", FamilyUpdateView.as_view()),
+    path("delete/family/<pk>", FamilyDeleteView.as_view()),
 ]

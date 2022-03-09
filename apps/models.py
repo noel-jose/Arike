@@ -134,6 +134,7 @@ class Patient(models.Model):
     )
     expired_time = models.DateTimeField(blank=True, null=True)
     ward = models.ForeignKey(Ward, on_delete=models.PROTECT)
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True)
     nurse = models.ForeignKey(
         CustomUser, blank=False, on_delete=models.PROTECT, null=True
     )
@@ -164,12 +165,15 @@ class FamilyDetail(models.Model):
     address = models.TextField(default="")
     education = models.CharField(max_length=35)
     occupation = models.CharField(max_length=35)
-    remarks = models.TextField()
+    remarks = models.TextField(null=True)
     is_primary = models.BooleanField(default=True)
-    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.full_name
 
 
 class Disease(models.Model):
