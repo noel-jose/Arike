@@ -235,10 +235,13 @@ class Treatment(models.Model):
     description = models.TextField()
     care_type = models.CharField(choices=CARE_TYPE, max_length=150)
     care_sub_type = models.CharField(choices=CARE_SUB_TYPE, max_length=100)
-    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.patient.full_name + " - " + self.care_type
 
 
 class TreatmentNotes(models.Model):

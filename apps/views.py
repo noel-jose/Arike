@@ -2,7 +2,7 @@ from operator import mod
 from pyexpat import model
 from django.shortcuts import render
 
-from .models import CustomUser, Facility, FamilyDetail, Patient
+from .models import CustomUser, Facility, FamilyDetail, Patient, Treatment
 
 # Create your views here.
 
@@ -326,6 +326,11 @@ class FamilyListView(ListView):
         print(objects)
         return objects
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["patient_id"] = self.kwargs["patient_id"]
+        return context
+
 
 class FamilyUpdateView(UpdateView):
     model = FamilyDetail
@@ -344,6 +349,86 @@ class FamilyDeleteView(DeleteView):
     model = FamilyDetail
     template_name = "FamilyDetails/delete.html"
     success_url = "/list/family"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
+
+""""
+
+    Creating Treatment views  
+
+"""
+
+
+class TreatmentForm(ModelForm):
+    class Meta:
+        model = Treatment
+        fields = ["care_type", "description", "care_sub_type"]
+
+
+class TreatmentCreateView(CreateView):
+    model = Treatment
+    form_class = TreatmentForm
+    template_name = "Treatment/create.html"
+    success_url = "/list/treatment"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        patient_id = self.kwargs["patient_id"]
+        patient = Patient.objects.get(pk=patient_id)
+        self.object.patient = patient
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        if self.success_url:
+            patient_id = self.kwargs["patient_id"]
+            return self.success_url + "/" + str(patient_id)
+
+
+class TreatmentListView(ListView):
+    model = Treatment
+    template_name = "Treatment/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        patient_id = self.kwargs["patient_id"]
+        patient = Patient.objects.get(pk=patient_id)
+        objects = Treatment.objects.filter(deleted=False, patient=patient).order_by(
+            "-updated_at"
+        )
+        return objects
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["patient_id"] = self.kwargs["patient_id"]
+        context["patient"] = Patient.objects.get(pk=self.kwargs["patient_id"]).full_name
+        context["nurse"] = Patient.objects.get(pk=self.kwargs["patient_id"]).nurse
+        return context
+
+
+class TreatmentUpdateView(UpdateView):
+    model = Treatment
+    form_class = TreatmentForm
+    template_name = "Treatment/update.html"
+    success_url = "/list/patient"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class TreatmentDeleteView(DeleteView):
+    model = Treatment
+    template_name = "Treatment/delete.html"
+    success_url = "/list/patient"
 
     def form_valid(self, form):
         success_url = self.get_success_url()
