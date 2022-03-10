@@ -1,0 +1,52 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">Scheduled Visits</h1>
+        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/visitschedule">Add</a>
+    </div>
+
+    <div class="grid grid-cols-2 ">
+        {% for object in objects %}
+        <div class="px-3 py-2 bg-white m-2 rounded-md ">
+            <div class="flex justify-between my-6">
+                <p class="font-semibold text-xl px-2">{{ object.patient }}</p>
+                <p class="font-semibold text-xl px-2 text-gray-700">{{ object.patient.ward }}</p>
+            </div>
+            <div class="grid grid-cols-2 ">
+                
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Phone Number</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.patient.phone }}</p>
+                </div> 
+
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Address</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.patient.address }}</p>
+                </div>
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Schedule Date and Time</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.date_time}}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Duration</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.duration}}</p>
+                </div>
+                 
+                
+            </div>
+            <div class="pr-12 pl-3 py-2 mr-8 my-6 flex justify-between">
+                <div>
+                    <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/visitschedule/{{ object.id }}">Edit</a>
+                    <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/visitschedule/{{ object.id }}">Delete</a>
+                </div>
+                <div >
+                    <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/visitschedule/{{ object.id }}">Visit</a>
+                </div>
+            </div>
+            
+        </div>
+            
+        {% endfor %}
+    </div>
+{% endblock content %}

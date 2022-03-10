@@ -190,6 +190,9 @@ class DiseaseHistory(models.Model):
 class VisitSchedule(models.Model):
     date_time = models.DateTimeField()
     duration = models.CharField(max_length=35)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, null=True)
+    nurse = models.ForeignKey(CustomUser, on_delete=models.PROTECT, null=True)
+    cancelled = models.BooleanField(default=False, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
@@ -217,7 +220,6 @@ class VisitDetails(models.Model):
     patient_at_peace = models.BooleanField(default=True)
     pain = models.BooleanField(default=True)
     symptoms = models.TextField()
-    note = models.TextField()
     visit_schedule = models.ForeignKey(VisitSchedule, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

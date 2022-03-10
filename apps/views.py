@@ -9,6 +9,7 @@ from .models import (
     Patient,
     Treatment,
     DiseaseHistory,
+    VisitSchedule,
 )
 
 # Create your views here.
@@ -519,6 +520,84 @@ class DiseaseHistoryUpdateView(UpdateView):
 class DiseaseHistoryDeleteView(DeleteView):
     model = DiseaseHistory
     template_name = "DiseaseHistory/delete.html"
+    success_url = "/list/patient"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
+
+"""
+
+    Visit Schedule views
+
+
+"""
+
+
+class VisitScheduleForm(ModelForm):
+    patient = forms.ModelChoiceField(queryset=Patient.objects.filter(deleted=False))
+
+    class Meta:
+        model = VisitSchedule
+        fields = ["date_time", "duration", "patient"]
+
+        widgets = {
+            "date_time": forms.DateInput(
+                format=("%Y-%m-%d"),
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Select a date",
+                    "type": "date",
+                },
+            ),
+        }
+
+
+class VisitScheduleCreateView(CreateView):
+    model = VisitSchedule
+    form_class = VisitScheduleForm
+    template_name = "VisitSchedule/create.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.nurse = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class VisitScheduleListView(ListView):
+    model = VisitSchedule
+    template_name = "VisitSchedule/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        objects = VisitSchedule.objects.filter(
+            deleted=False, nurse=self.request.user
+        ).order_by("-updated_at")
+        return objects
+
+
+class VisitScheduleUpdateView(UpdateView):
+    model = VisitSchedule
+    form_class = VisitScheduleForm
+    template_name = "VisitSchedule/update.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class VisitScheduleDeleteView(DeleteView):
+    model = VisitSchedule
+    template_name = "VisitSchedule/delete.html"
     success_url = "/list/patient"
 
     def form_valid(self, form):
