@@ -19,6 +19,10 @@ from django.urls import include, path
 from django.contrib.auth.views import LogoutView
 
 from apps.views import (
+    DieseaseHistoryCreateView,
+    DiseaseHistoryDeleteView,
+    DiseaseHistoryListView,
+    DiseaseHistoryUpdateView,
     FacilityDeleteView,
     FacilityDetailView,
     FacilityUpdateView,
@@ -78,5 +82,10 @@ urlpatterns = [
     path("create/treatment/<int:patient_id>", TreatmentCreateView.as_view()),
     path("list/treatment/<int:patient_id>", TreatmentListView.as_view()),
     path("update/treatment/<pk>", TreatmentUpdateView.as_view()),
-    path("delete/treatment/<pk>",TreatmentDeleteView.as_view())
+    path("delete/treatment/<pk>", TreatmentDeleteView.as_view()),
+    # urls for the disease history views
+    path("create/diseasehistory/<int:patient_id>", DieseaseHistoryCreateView.as_view()),
+    path("list/diseasehistory/<int:patient_id>", DiseaseHistoryListView.as_view()),
+    path("update/diseasehistory/<pk>", DiseaseHistoryUpdateView.as_view()),
+    path("delete/diseasehistory/<pk>", DiseaseHistoryDeleteView.as_view()),
 ]

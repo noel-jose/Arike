@@ -1,0 +1,52 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">Disease History</h1>
+        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/diseasehistory/{{ patient_id }}">New</a>
+    </div>
+    
+    <h1 class="text-2xl font-bold text-gray-800 m-2">{{ patient }}</h1>
+    <h1 class="text-xl font-regular text-gray-800 m-2">{{ patient.address }}</h1>
+
+    <div class="grid grid-cols-2 ">
+        {% for object in objects %}
+        <div class="px-3 py-2 bg-white m-2 rounded-md ">
+            <div class="flex my-6">
+                <p class="font-semibold text-xl px-2">{{ object.name }}</p>
+            </div>
+            <div class="text-gray-600 px-2 py-1">
+            {{ object.created_at | date:"D, d M, Y"}}
+            </div>
+            <div class="grid grid-cols-2 ">
+                
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">ICDS code</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.icds_code}}</p>
+                </div> 
+
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Given By</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.treated_by }}</p>
+                </div>
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Last Updated</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.updated_at | date:"D, d M, Y" }}</p>
+                </div>
+    
+                 
+                
+            </div>
+            <div class="pr-12 pl-3 py-2 mr-8 my-3">
+                <p class="text-gray-600 font-bold text-md">Description</p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.description }}</p>
+            </div>
+            <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/diseasehistory/{{ object.id }}">Edit</a>
+                <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/diseasehistory/{{ object.id }}">Delete</a>
+            </div>
+        </div>
+            
+        {% endfor %}
+    </div>
+{% endblock content %}

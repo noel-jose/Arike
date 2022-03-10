@@ -10,7 +10,7 @@ from apps.models import (
     Ward,
     Facility,
     Patient,
-    Disease,
+    DiseaseHistory,
     FamilyDetail,
     Treatment,
     TreatmentNotes,
@@ -25,3 +25,4 @@ admin.sites.site.register(Facility)
 admin.sites.site.register(Patient)
 admin.sites.site.register(FamilyDetail)
 admin.sites.site.register(Treatment)
+admin.sites.site.register(DiseaseHistory)

@@ -1,0 +1,32 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex my-8">
+        <h1 class="text-3xl font-bold text-gray-800">Update Disease History</h1>
+    </div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="">
+            {% for field in form %}
+                <div class="fieldWrapper m-4">
+                    <div class="bg-white rounded-lg px-2 py-2">
+                        <div class="text-l font-regular text-gray-600 mb-2">{{ field.label_tag }}</div> 
+                        <div>{{ field }}</div>
+                    </div>
+                    
+                    {% if field.help_text %}
+                    <div class="help text-sm text-gray-600 pt-2">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                    <p class="help text-sm text-red-400">*{{ field.errors|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-left mt-8 ml-4">
+            <Button class="bg-gray-800 px-4 text-white p-2 rounded-md " type="submit">Save</Button>
+        </div>
+        
+    </form>
+    
+{% endblock content %}

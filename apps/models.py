@@ -176,9 +176,15 @@ class FamilyDetail(models.Model):
         return self.full_name
 
 
-class Disease(models.Model):
+class DiseaseHistory(models.Model):
     name = models.CharField(max_length=35)
     icds_code = models.CharField(max_length=35)
+    description = models.TextField(null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT, null=True)
+    treated_by = models.ForeignKey(CustomUser, on_delete=models.PROTECT, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    deleted = models.BooleanField(default=False, null=True)
 
 
 class VisitSchedule(models.Model):
