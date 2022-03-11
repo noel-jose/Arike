@@ -257,10 +257,13 @@ class Treatment(models.Model):
 
 
 class TreatmentNotes(models.Model):
-    notes = models.TextField()
+    heading = models.CharField(max_length=150, null=True)
     description = models.TextField()
-    visit = models.ForeignKey(VisitDetails, on_delete=models.PROTECT)
-    treatment = models.ForeignKey(Treatment, on_delete=models.PROTECT)
+    visit = models.ForeignKey(VisitDetails, on_delete=models.PROTECT, null=True)
+    treatment = models.ForeignKey(Treatment, on_delete=models.PROTECT, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.heading

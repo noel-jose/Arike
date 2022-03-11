@@ -9,6 +9,7 @@ from .models import (
     Patient,
     Treatment,
     DiseaseHistory,
+    TreatmentNotes,
     VisitSchedule,
     VisitDetails,
 )
@@ -691,6 +692,79 @@ class VisitDetailsUpdateView(UpdateView):
 class VisitDetailsDeleteView(DeleteView):
     model = VisitDetails
     template_name = "VisitDetails/delete.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
+
+"""
+
+    Creating views for Treatement notes model
+
+"""
+
+
+class TreatmentNotesForm(ModelForm):
+    class Meta:
+        model = TreatmentNotes
+        fields = ["heading", "description"]
+
+
+class TreatmentNotesCreateView(CreateView):
+    model = TreatmentNotes
+    form_class = TreatmentNotesForm
+    template_name = "TreatmentNotes/create.html"
+    success_url = "/list/patient"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        treatment_id = self.kwargs["treatment_id"]
+        treatment = Treatment.objects.get(pk=treatment_id)
+        self.object.treatment = treatment
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class TreatmentNotesListView(ListView):
+    model = TreatmentNotes
+    template_name = "TreatmentNotes/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        treatment_id = self.kwargs["treatment_id"]
+        treatment = Treatment.objects.get(pk=treatment_id)
+        objects = TreatmentNotes.objects.filter(
+            deleted=False, treatment=treatment
+        ).order_by("-updated_at")
+        return objects
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["treatment"] = Treatment.objects.get(pk=self.kwargs["treatment_id"])
+        return context
+
+
+class TreatmentNotesUpdateView(UpdateView):
+    model = TreatmentNotes
+    form_class = TreatmentNotesForm
+    template_name = "TreatmentNotes/update.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class TreatmentNotesDeleteView(DeleteView):
+    model = TreatmentNotes
+    template_name = "TreatmentNotes/delete.html"
     success_url = "/list/visitschedule"
 
     def form_valid(self, form):

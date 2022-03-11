@@ -55,6 +55,10 @@ from apps.views import (
     VisitScheduleListView,
     VisitScheduleUpdateView,
     VisitScheduleDeleteView,
+    TreatmentNotesCreateView,
+    TreatmentNotesListView,
+    TreatmentNotesUpdateView,
+    TreatmentNotesDeleteView,
 )
 
 
@@ -108,4 +112,21 @@ urlpatterns = [
     path("list/visitdetails/<int:visit_schedule_id>", VisitDetailsListView.as_view()),
     path("update/visitdetails/<pk>", VisitDetailsUpdateView.as_view()),
     path("delete/visitdetails/<pk>", VisitDetailsDeleteView.as_view()),
+    # urls for the treatment notes
+    path(
+        "create/treatmentnote/<int:treatment_id>",
+        TreatmentNotesCreateView.as_view(),
+    ),
+    path(
+        "list/treatmentnote/<int:treatment_id>",
+        TreatmentNotesListView.as_view(),
+    ),
+    path(
+        "update/treatmentnote/<pk>",
+        TreatmentNotesUpdateView.as_view(),
+    ),
+    path(
+        "delete/treatmentnote/<pk>",
+        TreatmentNotesDeleteView.as_view(),
+    ),
 ]
