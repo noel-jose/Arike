@@ -220,7 +220,10 @@ class VisitDetails(models.Model):
     patient_at_peace = models.BooleanField(default=True)
     pain = models.BooleanField(default=True)
     symptoms = models.TextField()
-    visit_schedule = models.ForeignKey(VisitSchedule, on_delete=models.PROTECT)
+    visit_schedule = models.ForeignKey(
+        VisitSchedule, on_delete=models.PROTECT, null=True
+    )
+    notes = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
@@ -247,6 +250,7 @@ class Treatment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
+    active = models.BooleanField(default=True, null=True)
 
     def __str__(self):
         return self.patient.full_name + " - " + self.care_type

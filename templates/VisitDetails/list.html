@@ -1,0 +1,85 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+    <div class="flex justify-between  my-8">
+        <h1 class="text-3xl font-bold text-gray-800">Visit Details for - {{ visitschedule.date_time }}</h1>
+        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/visitdetails/{{ visitschedule.id  }}">New</a>
+    </div>
+    
+    <h1 class="text-2xl font-bold text-gray-800 m-2">{{ visitschedule.patient }}</h1>
+    <h1 class="text-xl font-regular text-gray-800 m-2">{{ visitschedule.patient.address }}</h1>
+
+    <div class="grid grid-cols-2 ">
+        {% for object in objects %}
+        <div class="px-3 py-2 bg-white m-2 rounded-md ">
+            <div class="grid grid-cols-2 ">
+                
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Palliative Phase</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.pallative_phase}}</p>
+                </div> 
+
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Blood Pressure</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.blood_pressure }}</p>
+                </div>
+
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Pulse</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.pulse }}</p>
+                </div>
+
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Blood Sugar Level</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.General_Random_Blood_Sugar }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Personal hygiene</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.Personal_hygiene }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Mouth hygiene</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.Mouth_hygiene}}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Public hygiene</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.Public_hygiene }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Systematic Examination</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.systematic_examination }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Alive</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.patient_at_peace }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Feeling pain</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.pain }}</p>
+                </div>
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Symptoms</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.symptoms }}</p>
+                </div>
+        
+                <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                    <p class="text-gray-600 font-bold text-md">Last Updated</p>
+                    <p class="text-gray-700 font-regular text-lg">{{ object.updated_at | date:"D, d M, Y" }}</p>
+                </div>
+    
+                 
+                
+            </div>
+            <div class="pr-12 pl-3 py-2 mr-8 my-3">
+                <p class="text-gray-600 font-bold text-md">Notes</p>
+                <p class="text-gray-700 font-regular text-lg">{{ object.notes }}</p>
+            </div>
+            <div class="pr-12 pl-3 py-2 mr-8 my-6">
+                <a class="bg-white text-gray-800 font-bold text-1xl px-3 py-1 rounded-md text-center border-2 border-gray-800" href="/update/visitdetails/{{ object.id }}">Edit</a>
+                <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/delete/visitdetails/{{ object.id }}">Delete</a>
+            </div>
+            
+        </div>
+            
+        {% endfor %}
+    </div>
+{% endblock content %}

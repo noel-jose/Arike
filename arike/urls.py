@@ -47,6 +47,10 @@ from apps.views import (
     UserDeleteView,
     FacilityListView,
     FacilityCreateView,
+    VisitDetailsCreateView,
+    VisitDetailsListView,
+    VisitDetailsUpdateView,
+    VisitDetailsDeleteView,
     VisitScheduleCreateView,
     VisitScheduleListView,
     VisitScheduleUpdateView,
@@ -97,4 +101,11 @@ urlpatterns = [
     path("list/visitschedule", VisitScheduleListView.as_view()),
     path("update/visitschedule/<pk>", VisitScheduleUpdateView.as_view()),
     path("delete/visitschedule/<pk>", VisitScheduleDeleteView.as_view()),
+    # urls for the visit details
+    path(
+        "create/visitdetails/<int:visit_schedule_id>", VisitDetailsCreateView.as_view()
+    ),
+    path("list/visitdetails/<int:visit_schedule_id>", VisitDetailsListView.as_view()),
+    path("update/visitdetails/<pk>", VisitDetailsUpdateView.as_view()),
+    path("delete/visitdetails/<pk>", VisitDetailsDeleteView.as_view()),
 ]

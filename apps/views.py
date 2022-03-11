@@ -10,6 +10,7 @@ from .models import (
     Treatment,
     DiseaseHistory,
     VisitSchedule,
+    VisitDetails,
 )
 
 # Create your views here.
@@ -379,7 +380,7 @@ class FamilyDeleteView(DeleteView):
 class TreatmentForm(ModelForm):
     class Meta:
         model = Treatment
-        fields = ["care_type", "description", "care_sub_type"]
+        fields = ["care_type", "description", "care_sub_type", "active"]
 
 
 class TreatmentCreateView(CreateView):
@@ -599,6 +600,98 @@ class VisitScheduleDeleteView(DeleteView):
     model = VisitSchedule
     template_name = "VisitSchedule/delete.html"
     success_url = "/list/patient"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
+
+""""
+
+    Visit Detail Views
+
+"""
+
+
+class VisitDetailsForm(ModelForm):
+    class Meta:
+        model = VisitDetails
+        fields = [
+            "pallative_phase",
+            "blood_pressure",
+            "pulse",
+            "General_Random_Blood_Sugar",
+            "Personal_hygiene",
+            "Mouth_hygiene",
+            "Public_hygiene",
+            "systematic_examination",
+            "notes",
+            "patient_at_peace",
+            "pain",
+            "symptoms",
+        ]
+
+
+class VisitDetailsCreateView(CreateView):
+    model = VisitDetails
+    form_class = VisitDetailsForm
+    template_name = "VisitDetails/create.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        visit_schedule_id = self.kwargs["visit_schedule_id"]
+        visitschedule = VisitSchedule.objects.get(pk=visit_schedule_id)
+        self.object.visit_schedule = visitschedule
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        if self.success_url:
+            return self.success_url
+
+
+class VisitDetailsListView(ListView):
+    model = VisitDetails
+    template_name = "VisitDetails/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        visit_schedule_id = self.kwargs["visit_schedule_id"]
+        visitschedule = VisitSchedule.objects.get(pk=visit_schedule_id)
+        objects = VisitDetails.objects.filter(
+            deleted=False, visit_schedule=visitschedule
+        ).order_by("-updated_at")
+        return objects
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["visitschedule"] = VisitSchedule.objects.get(
+            pk=self.kwargs["visit_schedule_id"]
+        )
+        return context
+
+
+class VisitDetailsUpdateView(UpdateView):
+    model = VisitDetails
+    form_class = VisitDetailsForm
+    template_name = "VisitDetails/update.html"
+    success_url = "/list/visitschedule"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class VisitDetailsDeleteView(DeleteView):
+    model = VisitDetails
+    template_name = "VisitDetails/delete.html"
+    success_url = "/list/visitschedule"
 
     def form_valid(self, form):
         success_url = self.get_success_url()
