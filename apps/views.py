@@ -1,6 +1,4 @@
-from operator import mod
-from pyexpat import model
-from django.shortcuts import render
+from .signals import send_login_mail
 
 from .models import (
     CustomUser,
@@ -75,6 +73,7 @@ class CustomUserForm(ModelForm):
             "role",
             "district",
             "facility",
+            "schedule_alert_time",
         ]
         exclude = [
             "is_staff",
@@ -92,6 +91,13 @@ class UsersCreateView(CreateView):
     form_class = CustomUserForm
     template_name = "User/customuser_create.html"
     success_url = "/login"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        self.object.save()
+        send_login_mail(self.object)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class UserUpdateView(UpdateView):

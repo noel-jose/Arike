@@ -104,13 +104,14 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=150, blank=True)
     role = models.CharField(choices=USER_ROLES, max_length=20, blank=False)
     phone = models.CharField(max_length=14, validators=[phone_number_regex])
-    is_verified = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
     district = models.ForeignKey(
         District, on_delete=models.PROTECT, blank=True, null=True
     )
     facility = models.ForeignKey(
         Facility, on_delete=models.PROTECT, blank=True, null=True
     )
+    schedule_alert_time = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
