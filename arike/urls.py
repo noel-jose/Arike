@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include, path
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordChangeView
+
 
 from apps.views import (
     DieseaseHistoryCreateView,
@@ -63,6 +64,7 @@ from apps.views import (
 
 
 urlpatterns = [
+    path("resetpassword", PasswordChangeView.as_view()),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path("login", UserLoginView.as_view()),

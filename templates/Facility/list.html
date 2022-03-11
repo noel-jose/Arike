@@ -4,7 +4,10 @@
         <h1 class="text-3xl font-bold text-gray-800">Facilities</h1>
         <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/facility">New</a>
     </div>
-
+    <form class="px-3 py-4 bg-white m-2 rounded-md "method="get">
+        {{ filter.form }}
+        <button class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center mx-4" type="submit">Search</button>
+    </form>
     <div id="list_of_users" class="flex wrap">
         {% for facility in facilities %}
             <a class="px-3 py-2 bg-white m-2 rounded-md" href="/detail/facility/{{ facility.id }}">

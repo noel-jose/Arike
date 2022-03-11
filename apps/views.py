@@ -1,4 +1,5 @@
 from .signals import send_login_mail
+from django.contrib.auth import views
 
 from .models import (
     CustomUser,
@@ -12,19 +13,25 @@ from .models import (
     VisitDetails,
 )
 
+from .filters import CustomUserFilter, FacilityFilter, PatientFilter
+from django_filters.views import FilterView
+
 # Create your views here.
 
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordResetView
 from django.views.generic import ListView, UpdateView, DetailView, DeleteView
 from django.views.generic import CreateView
 from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.forms import ChoiceField, ModelForm, TimeInput
 from django import forms
 
 from .models import FACILITY_KIND, GENDER_CHOICES
+
+from .Mixin import UserPermissionMixin
 
 
 class CustomUserAuthenticationForm(AuthenticationForm):
@@ -50,9 +57,12 @@ class UserLoginView(LoginView):
 """
 
 
-class UsersListView(ListView):
+class UsersListView(LoginRequiredMixin, UserPermissionMixin, FilterView):
+    permission_required = "Secondary Nurse", "District Admin"
+
     template_name = "User/customuser_list.html"
     context_object_name = "users"
+    filterset_class = CustomUserFilter
 
     def get_queryset(self):
         users = CustomUser.objects.filter(deleted=False)
@@ -87,7 +97,9 @@ class CustomUserForm(ModelForm):
         # field_order = ["full_name", "email", "password", "phone"]
 
 
-class UsersCreateView(CreateView):
+class UsersCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin"
+
     form_class = CustomUserForm
     template_name = "User/customuser_create.html"
     success_url = "/login"
@@ -100,19 +112,24 @@ class UsersCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = CustomUser
     form_class = CustomUserForm
     template_name = "User/customuser_update.html"
     success_url = "/dashboard"
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, UserPermissionMixin, DetailView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
     model = CustomUser
     template_name = "User/customuser_detail.html"
 
 
-class UserDeleteView(DeleteView):
+class UserDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin"
+
     model = CustomUser
     template_name = "User/customuser_delete.html"
     success_url = "/dashboard"
@@ -131,9 +148,12 @@ class UserDeleteView(DeleteView):
 """
 
 
-class FacilityListView(ListView):
+class FacilityListView(LoginRequiredMixin, UserPermissionMixin, FilterView):
+    permission_required = "District Admin"
+
     template_name = "Facility/list.html"
     context_object_name = "facilities"
+    filterset_class = FacilityFilter
 
     def get_queryset(self):
         facilities = Facility.objects.filter(deleted=False)
@@ -148,25 +168,33 @@ class FacilityForm(ModelForm):
         fields = ["kind", "name", "address", "pincode", "phone", "ward"]
 
 
-class FacilityCreateView(CreateView):
+class FacilityCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin"
+
     form_class = FacilityForm
     template_name = "Facility/create.html"
     success_url = "/list/facility"
 
 
-class FacilityUpdateView(UpdateView):
+class FacilityUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin"
+
     model = Facility
     form_class = FacilityForm
     template_name = "Facility/update.html"
     success_url = "/list/facility"
 
 
-class FacilityDetailView(DetailView):
+class FacilityDetailView(LoginRequiredMixin, UserPermissionMixin, DetailView):
+    permission_required = "District Admin"
+
     model = Facility
     template_name = "Facility/detail.html"
 
 
-class FacilityDeleteView(DeleteView):
+class FacilityDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin"
+
     model = Facility
     template_name = "Facility/delete.html"
     success_url = "/list/facility"
@@ -185,10 +213,11 @@ class FacilityDeleteView(DeleteView):
 """
 
 
-class PatientListView(ListView):
+class PatientListView(FilterView):
     model = Patient
     template_name = "Patient/list.html"
     context_object_name = "patients"
+    filterset_class = PatientFilter
 
     def get_queryset(self):
         if self.request.user.role == "District Admin":
