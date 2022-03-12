@@ -9,10 +9,11 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import django_heroku
 from pathlib import Path
 
 import environ
+
 
 # Initialise environment variables
 env = environ.Env()
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "apps",
     "django_filters",
+    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "arike.urls"
@@ -92,13 +95,6 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="postgres:///arike",
-    ),
-}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -176,3 +172,8 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
