@@ -132,7 +132,7 @@ class UsersCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
 
     form_class = CustomUserForm
     template_name = "User/customuser_create.html"
-    success_url = "/login"
+    success_url = "/"
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
