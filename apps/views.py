@@ -51,6 +51,7 @@ class NewPasswordChangeView(PasswordChangeView):
         # except the current one.
         update_session_auth_hash(self.request, form.user)
         self.object.is_verified = True
+        self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
 
