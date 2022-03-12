@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
-from arike.settings import EMAIL_HOST_USER
+from arike.settings import EMAIL_HOST_USER, ALLOWED_HOSTS
 
 from .models import CustomUser, FamilyDetail, Treatment
 
@@ -15,7 +15,7 @@ def send_login_mail(instance):
     Your login details are as follows
     User name : "{instance.username}"
     Password : "welcometoarike"
-    Login to : 
+    Login to : { ALLOWED_HOSTS }
     Do change the password after you login
     """
     send_mail(subject, content, EMAIL_HOST_USER, [receiver_email])

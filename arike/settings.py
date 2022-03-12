@@ -31,7 +31,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
 
 
 # Application definition
@@ -142,7 +142,7 @@ INTERNAL_IPS = [
 
 AUTH_USER_MODEL = "apps.CustomUser"
 
-LOGIN_REDIRECT_URL = "/tasks"
+LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/login"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -166,3 +166,6 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 BROKER_URL = env("BROKER_URL", default="redis://localhost:6379")
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
