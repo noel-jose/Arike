@@ -16,22 +16,50 @@
             <aside>
             <ul>
                 <li>
-                <a class="flex items-center px-4 py-2 text-white bg-gray-700 rounded-md " href="#">
+                <a class="flex items-center px-4 py-2 text-gray-600 rounded-md  hover:bg-gray-200 {% if request.path == '/' %} text-white bg-gray-700 {% endif %}" href="/">
                     <span class="mx-4 font-medium">Home</span>
                 </a>
                 </li>
 
                 <li>
-                <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200" href="#">
-                    <span class="mx-4 font-medium">Settings</span>
+                    <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200 {% if '/detail/user/' in request.path %} text-white bg-gray-700 {% endif %}" href="/detail/user/{{ request.user.id }}">
+                        <span class="mx-4 font-medium">Profile </span>
+                    </a>
+                </li>
+
+                {% if request.user.role == "District Admin" %}
+                <li>
+                <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200 {% if '/list/users' in request.path %} text-white bg-gray-700 {% endif %}" href="/list/users">
+                    <span class="mx-4 font-medium">Users</span>
                 </a>
+                </li>
+                {% endif %}
+                {% if request.user.role == "District Admin" %}
+                <li>
+                    <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200 {% if '/list/facility' in request.path %} text-white bg-gray-700 {% endif %}" href="/list/facility">
+                        <span class="mx-4 font-medium">Facilities </span>
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200 {% if '/list/patient' in request.path %} text-white bg-gray-700 {% endif %}" href="/list/patient">
+                        <span class="mx-4 font-medium">Patients </span>
+                    </a>
                 </li>
 
                 <li>
-                    <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200" href="/logout">
-                        <span class="mx-4 font-medium">Logout</span>
+                    <a class="flex items-center px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200 {% if '/list/visitschedule' in request.path %} text-white bg-gray-700 {% endif %}" href="/list/visitschedule">
+                        <span class="mx-4 font-medium">Visits </span>
                     </a>
-                    </li>
+                </li>
+
+
+                <li>
+                    <a class="flex flex-col items-start px-4 py-2 mt-5 text-gray-600 rounded-md hover:bg-gray-200" href="/logout">
+                        <span class="mx-4 text-gray-700 font-medium">{{ request.user }}</span>
+                        <span class="mx-4 font-medium">Logout </span>
+                    </a>
+                </li>
             </ul>
 
             </aside>

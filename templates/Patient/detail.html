@@ -38,20 +38,16 @@
                 <p class="text-gray-600 font-bold text-md">Facility</p>
                 <p class="text-gray-700 font-regular text-lg">{{ object.facility}}</p>
             </div>
+            <div class="bg-white pr-32 pl-3 py-2 rounded-lg mr-24 my-6">
+                <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/refer/patient/{{ object.id }}">Refer</a>
+            </div>
             
         </div>
     </div>
-    <div class="mt-6">
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/family/{{ object.id }}">Add Family</a>
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/list/family/{{ object.id }}">Family Details</a>
-    </div>
-    <div class="mt-6">
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/treatment/{{ object.id }}">Add Treatment</a>
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/list/treatment/{{ object.id }}">Treatment Details</a>
-    </div>
-    <div class="mt-6">
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/diseasehistory/{{ object.id }}">Add Disease History</a>
-        <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/list/diseasehistory/{{ object.id }}">Disease History</a>
+    <div class="flex justify-between mt-6">
+        <a class="bg-white text-gray-800 font-bold text-1xl px-4 py-4 border-gray-700 border-2 rounded-md text-center" href="/list/family/{{ object.id }}">Family Details</a>
+        <a class="bg-white text-gray-800 font-bold text-1xl px-4 py-4 border-gray-700 border-2 rounded-md text-center" href="/list/treatment/{{ object.id }}">Treatment Details</a>
+        <a class="bg-white text-gray-800 font-bold text-1xl px-4 py-4 border-gray-700 border-2 rounded-md text-center" href="/list/diseasehistory/{{ object.id }}">Disease History</a>
     </div>
 
 {% endblock content %}

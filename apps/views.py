@@ -1,5 +1,8 @@
 from .signals import send_login_mail
 from django.contrib.auth import views
+from django.views import View
+from django.shortcuts import render
+import logging
 
 from .models import (
     CustomUser,
@@ -15,6 +18,9 @@ from .models import (
 
 from .filters import CustomUserFilter, FacilityFilter, PatientFilter
 from django_filters.views import FilterView
+
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 
@@ -33,6 +39,20 @@ from .models import FACILITY_KIND, GENDER_CHOICES
 
 from .Mixin import UserPermissionMixin
 
+from django.contrib.auth.views import PasswordChangeView
+
+
+class NewPasswordChangeView(PasswordChangeView):
+    success_url = "/"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        # Updating the password logs out all other sessions for the user
+        # except the current one.
+        update_session_auth_hash(self.request, form.user)
+        self.object.is_verified = True
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class CustomUserAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -48,6 +68,14 @@ class CustomUserAuthenticationForm(AuthenticationForm):
 class UserLoginView(LoginView):
     form_class = CustomUserAuthenticationForm
     template_name = "login.html"
+
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        auth_login(self.request, form.get_user())
+        if self.request.user.is_verified == True:
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return HttpResponseRedirect("/resetpassword")
 
 
 """
@@ -78,7 +106,6 @@ class CustomUserForm(ModelForm):
             "full_name",
             "username",
             "email",
-            "password",
             "phone",
             "role",
             "district",
@@ -95,6 +122,9 @@ class CustomUserForm(ModelForm):
             "is_superuser",
         ]
         # field_order = ["full_name", "email", "password", "phone"]
+        widgets = {
+            "schedule_alert_time": TimeInput(attrs={"type": "datetime-local"}),
+        }
 
 
 class UsersCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
@@ -107,6 +137,8 @@ class UsersCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
         self.object = form.save()
+        self.object.set_password("welcometoarike")
+        print(self.object.password)
         self.object.save()
         send_login_mail(self.object)
         return HttpResponseRedirect(self.get_success_url())
@@ -118,7 +150,7 @@ class UserUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
     model = CustomUser
     form_class = CustomUserForm
     template_name = "User/customuser_update.html"
-    success_url = "/dashboard"
+    success_url = "/"
 
 
 class UserDetailView(LoginRequiredMixin, UserPermissionMixin, DetailView):
@@ -132,7 +164,7 @@ class UserDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
 
     model = CustomUser
     template_name = "User/customuser_delete.html"
-    success_url = "/dashboard"
+    success_url = "/"
 
     def form_valid(self, form):
         success_url = self.get_success_url()
@@ -213,7 +245,9 @@ class FacilityDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
 """
 
 
-class PatientListView(FilterView):
+class PatientListView(LoginRequiredMixin, UserPermissionMixin, FilterView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Patient
     template_name = "Patient/list.html"
     context_object_name = "patients"
@@ -265,7 +299,9 @@ class PatientForm(ModelForm):
         }
 
 
-class PatientCreateView(CreateView):
+class PatientCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     form_class = PatientForm
     template_name = "Patient/create.html"
     success_url = "/list/patient"
@@ -279,19 +315,25 @@ class PatientCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class PatientUpdateView(UpdateView):
+class PatientUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Patient
     form_class = PatientForm
     template_name = "Patient/update.html"
     success_url = "/list/patient"
 
 
-class PatientDetailView(DetailView):
+class PatientDetailView(LoginRequiredMixin, UserPermissionMixin, DetailView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Patient
     template_name = "Patient/detail.html"
 
 
-class PatientDeleteView(DeleteView):
+class PatientDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Patient
     template_name = "Patient/delete.html"
     success_url = "/list/patient"
@@ -341,11 +383,13 @@ class FamilyForm(ModelForm):
         }
 
 
-class FamilyCreateView(CreateView):
+class FamilyCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = FamilyDetail
     form_class = FamilyForm
     template_name = "FamilyDetails/create.html"
-    success_url = "/dashboard"
+    success_url = "/"
 
     # def get_context_data(self, **kwargs):
     #     context = super(FamilyCreateView, self).get_context_data(**kwargs)
@@ -362,7 +406,9 @@ class FamilyCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class FamilyListView(ListView):
+class FamilyListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = FamilyDetail
     template_name = "FamilyDetails/list.html"
     context_object_name = "objects"
@@ -381,7 +427,9 @@ class FamilyListView(ListView):
         return context
 
 
-class FamilyUpdateView(UpdateView):
+class FamilyUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = FamilyDetail
     form_class = FamilyForm
     template_name = "FamilyDetails/update.html"
@@ -394,7 +442,9 @@ class FamilyUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class FamilyDeleteView(DeleteView):
+class FamilyDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = FamilyDetail
     template_name = "FamilyDetails/delete.html"
     success_url = "/list/family"
@@ -419,7 +469,9 @@ class TreatmentForm(ModelForm):
         fields = ["care_type", "description", "care_sub_type", "active"]
 
 
-class TreatmentCreateView(CreateView):
+class TreatmentCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Treatment
     form_class = TreatmentForm
     template_name = "Treatment/create.html"
@@ -440,7 +492,9 @@ class TreatmentCreateView(CreateView):
             return self.success_url + "/" + str(patient_id)
 
 
-class TreatmentListView(ListView):
+class TreatmentListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Treatment
     template_name = "Treatment/list.html"
     context_object_name = "objects"
@@ -461,7 +515,9 @@ class TreatmentListView(ListView):
         return context
 
 
-class TreatmentUpdateView(UpdateView):
+class TreatmentUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Treatment
     form_class = TreatmentForm
     template_name = "Treatment/update.html"
@@ -474,7 +530,9 @@ class TreatmentUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TreatmentDeleteView(DeleteView):
+class TreatmentDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = Treatment
     template_name = "Treatment/delete.html"
     success_url = "/list/patient"
@@ -499,7 +557,9 @@ class DiseaseHistoryForm(ModelForm):
         fields = ["name", "icds_code", "description"]
 
 
-class DieseaseHistoryCreateView(CreateView):
+class DieseaseHistoryCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = DiseaseHistory
     form_class = DiseaseHistoryForm
     template_name = "DiseaseHistory/create.html"
@@ -521,7 +581,9 @@ class DieseaseHistoryCreateView(CreateView):
             return self.success_url + "/" + str(patient_id)
 
 
-class DiseaseHistoryListView(ListView):
+class DiseaseHistoryListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = DiseaseHistory
     template_name = "DiseaseHistory/list.html"
     context_object_name = "objects"
@@ -541,7 +603,9 @@ class DiseaseHistoryListView(ListView):
         return context
 
 
-class DiseaseHistoryUpdateView(UpdateView):
+class DiseaseHistoryUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = DiseaseHistory
     form_class = DiseaseHistoryForm
     template_name = "DiseaseHistory/update.html"
@@ -554,7 +618,9 @@ class DiseaseHistoryUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class DiseaseHistoryDeleteView(DeleteView):
+class DiseaseHistoryDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = DiseaseHistory
     template_name = "DiseaseHistory/delete.html"
     success_url = "/list/patient"
@@ -593,7 +659,9 @@ class VisitScheduleForm(ModelForm):
         }
 
 
-class VisitScheduleCreateView(CreateView):
+class VisitScheduleCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitSchedule
     form_class = VisitScheduleForm
     template_name = "VisitSchedule/create.html"
@@ -607,7 +675,9 @@ class VisitScheduleCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class VisitScheduleListView(ListView):
+class VisitScheduleListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitSchedule
     template_name = "VisitSchedule/list.html"
     context_object_name = "objects"
@@ -619,7 +689,9 @@ class VisitScheduleListView(ListView):
         return objects
 
 
-class VisitScheduleUpdateView(UpdateView):
+class VisitScheduleUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitSchedule
     form_class = VisitScheduleForm
     template_name = "VisitSchedule/update.html"
@@ -632,7 +704,9 @@ class VisitScheduleUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class VisitScheduleDeleteView(DeleteView):
+class VisitScheduleDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitSchedule
     template_name = "VisitSchedule/delete.html"
     success_url = "/list/patient"
@@ -670,7 +744,9 @@ class VisitDetailsForm(ModelForm):
         ]
 
 
-class VisitDetailsCreateView(CreateView):
+class VisitDetailsCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitDetails
     form_class = VisitDetailsForm
     template_name = "VisitDetails/create.html"
@@ -690,7 +766,9 @@ class VisitDetailsCreateView(CreateView):
             return self.success_url
 
 
-class VisitDetailsListView(ListView):
+class VisitDetailsListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitDetails
     template_name = "VisitDetails/list.html"
     context_object_name = "objects"
@@ -711,7 +789,9 @@ class VisitDetailsListView(ListView):
         return context
 
 
-class VisitDetailsUpdateView(UpdateView):
+class VisitDetailsUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitDetails
     form_class = VisitDetailsForm
     template_name = "VisitDetails/update.html"
@@ -724,7 +804,9 @@ class VisitDetailsUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class VisitDetailsDeleteView(DeleteView):
+class VisitDetailsDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = VisitDetails
     template_name = "VisitDetails/delete.html"
     success_url = "/list/visitschedule"
@@ -749,7 +831,9 @@ class TreatmentNotesForm(ModelForm):
         fields = ["heading", "description"]
 
 
-class TreatmentNotesCreateView(CreateView):
+class TreatmentNotesCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = TreatmentNotes
     form_class = TreatmentNotesForm
     template_name = "TreatmentNotes/create.html"
@@ -765,7 +849,9 @@ class TreatmentNotesCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TreatmentNotesListView(ListView):
+class TreatmentNotesListView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = TreatmentNotes
     template_name = "TreatmentNotes/list.html"
     context_object_name = "objects"
@@ -784,7 +870,9 @@ class TreatmentNotesListView(ListView):
         return context
 
 
-class TreatmentNotesUpdateView(UpdateView):
+class TreatmentNotesUpdateView(LoginRequiredMixin, UserPermissionMixin, UpdateView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = TreatmentNotes
     form_class = TreatmentNotesForm
     template_name = "TreatmentNotes/update.html"
@@ -797,7 +885,9 @@ class TreatmentNotesUpdateView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TreatmentNotesDeleteView(DeleteView):
+class TreatmentNotesDeleteView(LoginRequiredMixin, UserPermissionMixin, DeleteView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
     model = TreatmentNotes
     template_name = "TreatmentNotes/delete.html"
     success_url = "/list/visitschedule"
@@ -807,3 +897,61 @@ class TreatmentNotesDeleteView(DeleteView):
         self.object.deleted = True
         self.object.save()
         return HttpResponseRedirect(success_url)
+
+
+###
+###
+###     View for a PHC to refer to a CHC
+###
+###
+class ReferForm(forms.Form):
+    secondary_nurse = forms.ModelChoiceField(
+        queryset=CustomUser.objects.filter(deleted=False, role="Secondary Nurse")
+    )
+
+
+class ReferView(LoginRequiredMixin, UserPermissionMixin, View):
+    permission_required = "District Admin", "Primary Nurse"
+
+    form_class = ReferForm
+    template = "Patient/refer.html"
+
+    def get(self, request, patient_id):
+        try:
+            form = self.form_class()
+            return render(request, self.template, {"form": form})
+
+        except Exception as e:
+            logging.error(e)
+            return HttpResponseRedirect("/500")
+
+    def post(self, request, patient_id):
+
+        data = request.POST
+        form = self.form_class(data)
+        if form.is_valid():
+            phc_nurse = self.request.user
+            patient_id = self.kwargs["patient_id"]
+            patient = Patient.objects.get(pk=patient_id)
+            secondary_nurse_id = form.data["secondary_nurse"]
+            secondary_nurse = CustomUser.objects.get(pk=secondary_nurse_id)
+            patient.nurse = secondary_nurse
+            patient.facility = secondary_nurse.facility
+            patient.save()
+            return HttpResponseRedirect("/list/patient")
+        return render(request, self.template, {"form": form})
+
+
+##
+##
+## view for dashboard
+##
+##
+
+
+class Dashboard(LoginRequiredMixin, UserPermissionMixin, View):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+    template = "dashboard.html"
+
+    def get(self, request):
+        return render(request, self.template)

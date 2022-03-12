@@ -20,6 +20,8 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView
 
 
 from apps.views import (
+    Dashboard,
+    NewPasswordChangeView,
     DieseaseHistoryCreateView,
     DiseaseHistoryDeleteView,
     DiseaseHistoryListView,
@@ -60,11 +62,11 @@ from apps.views import (
     TreatmentNotesListView,
     TreatmentNotesUpdateView,
     TreatmentNotesDeleteView,
+    ReferView,
 )
 
 
 urlpatterns = [
-    path("resetpassword", PasswordChangeView.as_view()),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path("login", UserLoginView.as_view()),
@@ -131,4 +133,9 @@ urlpatterns = [
         "delete/treatmentnote/<pk>",
         TreatmentNotesDeleteView.as_view(),
     ),
+    # url for passowrd reset view
+    path("resetpassword", NewPasswordChangeView.as_view()),
+    # url for patient refer
+    path("refer/patient/<int:patient_id>", ReferView.as_view()),
+    path("", Dashboard.as_view()),
 ]

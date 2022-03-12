@@ -14,7 +14,9 @@
         {% for patient in patients %}
             <a class="px-3 py-2 bg-white m-2 rounded-md" href="/detail/patient/{{ patient.id }}">
                 <p class="font-semibold">{{ patient.full_name }}</p>
-                <p>{{ patient.address }}</p>
+                <p>Address : {{ patient.address }}</p>
+                <p>Ward : {{ patient.ward }}</p>
+                <p>Cared By : {{ patient.nurse }}</p>
             </a>
         {% endfor %}
     </div>

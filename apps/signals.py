@@ -9,12 +9,12 @@ from .models import CustomUser, FamilyDetail, Treatment
 # sending a mail to the user when account is created
 def send_login_mail(instance):
     receiver_email = instance.email
-    subject = instance.full_name + "Login Details to arike"
+    subject = instance.full_name + " Login Details to arike"
     content = f"""
     Welcome to Arike.
     Your login details are as follows
-    User name : {instance.username}
-    Password : {instance.password}
+    User name : "{instance.username}"
+    Password : "welcometoarike"
     Login to : 
     Do change the password after you login
     """
