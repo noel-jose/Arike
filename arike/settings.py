@@ -92,6 +92,13 @@ DATABASES = {
     }
 }
 
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres:///arike",
+    ),
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
