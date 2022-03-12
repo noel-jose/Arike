@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-import django_heroku
 from pathlib import Path
 
 import environ
@@ -95,6 +94,13 @@ DATABASES = {
     }
 }
 
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres:///task_manager",
+    ),
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -174,6 +180,3 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-
-# Activate Django-Heroku.
-django_heroku.settings(locals())
