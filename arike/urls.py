@@ -63,6 +63,8 @@ from apps.views import (
     TreatmentNotesUpdateView,
     TreatmentNotesDeleteView,
     ReferView,
+    VisitDetailsListPatientView,
+    TreatmentNotesVisitCreateView,
 )
 
 
@@ -138,4 +140,12 @@ urlpatterns = [
     # url for patient refer
     path("refer/patient/<int:patient_id>", ReferView.as_view()),
     path("", Dashboard.as_view()),
+    path(
+        "list/visitdetailspatient/<int:patient_id>",
+        VisitDetailsListPatientView.as_view(),
+    ),
+    path(
+        "list/visittreatmentnotes/<int:visit_schedule_id>",
+        TreatmentNotesVisitCreateView.as_view(),
+    ),
 ]

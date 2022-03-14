@@ -194,6 +194,7 @@ class VisitSchedule(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, null=True)
     nurse = models.ForeignKey(CustomUser, on_delete=models.PROTECT, null=True)
     cancelled = models.BooleanField(default=False, null=True)
+    completed = models.BooleanField(default=False, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
@@ -260,7 +261,7 @@ class Treatment(models.Model):
 class TreatmentNotes(models.Model):
     heading = models.CharField(max_length=150, null=True)
     description = models.TextField()
-    visit = models.ForeignKey(VisitDetails, on_delete=models.PROTECT, null=True)
+    visit = models.ForeignKey(VisitSchedule, on_delete=models.PROTECT, null=True)
     treatment = models.ForeignKey(Treatment, on_delete=models.PROTECT, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

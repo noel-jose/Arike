@@ -2,7 +2,9 @@
 {% block content %}
     <div class="flex justify-between  my-8">
         <h1 class="text-3xl font-bold text-gray-800">Visit Details for - {{ visitschedule.date_time }}</h1>
+        {% if "/list/visitdetailspatient/" not in request.path %}
         <a class="bg-gray-800 text-white font-bold text-1xl px-3 py-1 rounded-md text-center" href="/create/visitdetails/{{ visitschedule.id  }}">New</a>
+        {% endif %}
     </div>
     
     <h1 class="text-2xl font-bold text-gray-800 m-2">{{ visitschedule.patient }}</h1>
@@ -10,7 +12,11 @@
 
     <div class="grid grid-cols-2 ">
         {% for object in objects %}
+        
         <div class="px-3 py-2 bg-white m-2 rounded-md ">
+            {% if "/list/visitdetailspatient/" in request.path %}
+                <p class="text-gray-800 py-4 pl-3 font-bold text-lg">{{ object.visit_schedule.nurse  }} - {{ object.visit_schedule.date_time | date:"D, d M, Y"}}</p>
+            {% endif %}
             <div class="grid grid-cols-2 ">
                 
                 <div class="pr-12 pl-3 py-2 mr-8 my-6">

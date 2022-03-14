@@ -43,7 +43,7 @@ from django.contrib.auth.views import PasswordChangeView
 
 
 class NewPasswordChangeView(PasswordChangeView):
-    success_url = "/"
+    success_url = "/logout"
 
     def form_valid(self, form):
         self.object = form.save()
@@ -102,8 +102,6 @@ class CustomUserForm(ModelForm):
     class Meta:
         model = CustomUser
         fields = [
-            "first_name",
-            "last_name",
             "full_name",
             "username",
             "email",
@@ -685,7 +683,7 @@ class VisitScheduleListView(LoginRequiredMixin, UserPermissionMixin, ListView):
 
     def get_queryset(self):
         objects = VisitSchedule.objects.filter(
-            deleted=False, nurse=self.request.user
+            deleted=False, nurse=self.request.user, completed=False
         ).order_by("-updated_at")
         return objects
 
@@ -760,6 +758,8 @@ class VisitDetailsCreateView(LoginRequiredMixin, UserPermissionMixin, CreateView
         visitschedule = VisitSchedule.objects.get(pk=visit_schedule_id)
         self.object.visit_schedule = visitschedule
         self.object.save()
+        visitschedule.completed = True
+        visitschedule.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -846,6 +846,11 @@ class TreatmentNotesCreateView(LoginRequiredMixin, UserPermissionMixin, CreateVi
         treatment_id = self.kwargs["treatment_id"]
         treatment = Treatment.objects.get(pk=treatment_id)
         self.object.treatment = treatment
+        if self.kwargs["visit_schedule_id"]:
+            visit_schedule = VisitSchedule.objects.get(
+                pk=self.kwargs["visit_schedule_id"]
+            )
+            self.object.visit = visit_schedule
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -956,3 +961,82 @@ class Dashboard(LoginRequiredMixin, UserPermissionMixin, View):
 
     def get(self, request):
         return render(request, self.template)
+
+
+##
+###
+##   View for Visit Details in PatientDetail view
+###
+##
+
+
+class VisitDetailsListPatientView(LoginRequiredMixin, UserPermissionMixin, ListView):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
+    model = VisitDetails
+    template_name = "VisitDetails/list.html"
+    context_object_name = "objects"
+
+    def get_queryset(self):
+        patient_id = self.kwargs["patient_id"]
+        patient = Patient.objects.get(pk=patient_id)
+        visitschedule = VisitSchedule.objects.filter(
+            patient=patient, cancelled=False, completed=True, deleted=False
+        )
+
+        objects = VisitDetails.objects.filter(
+            deleted=False, visit_schedule__in=visitschedule
+        ).order_by("-updated_at")
+
+        return objects
+
+
+##
+###
+##   View for adding treatment notes in visit
+###
+##
+
+
+class TreatmentNotesVisitForm(ModelForm):
+    treatment = forms.ModelChoiceField(
+        queryset=Treatment.objects.filter(
+            deleted=False,
+        )
+    )
+
+    class Meta:
+        model = TreatmentNotes
+        fields = ["heading", "description", "treatment"]
+
+    # def __init__(self, *args, **kwargs):
+    #     visit_schedule_id = kwargs.pop("visit_schedule_id", None)
+    #     super().__init__(*args, **kwargs)
+    #     treatments_for_patient = Treatment.objects.filter(
+    #         deleted=False,
+    #         patinet=VisitSchedule.objects.get(pk=visit_schedule_id).patient,
+    #     )
+    #     print(treatments_for_patient)
+    #     self.fields["treatment"].queryset = Treatment.objects.filter(
+    #         deleted=False,
+    #     )
+
+
+class TreatmentNotesVisitCreateView(
+    LoginRequiredMixin, UserPermissionMixin, CreateView
+):
+    permission_required = "District Admin", "Primary Nurse", "Secondary Nurse"
+
+    model = TreatmentNotes
+    form_class = TreatmentNotesVisitForm
+    template_name = "TreatmentNotes/create.html"
+    success_url = "/list/patient"
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        visit = self.kwargs["visit_schedule_id"]
+        visit = VisitSchedule.objects.get(pk=visit)
+        self.object.visit = visit
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
