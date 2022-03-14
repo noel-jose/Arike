@@ -87,20 +87,20 @@ WSGI_APPLICATION = "arike.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 # DATABASES = {
-#     "default": env.db(
-#         "DATABASE_URL",
-#         default="postgres:///task_manager",
-#     ),
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
 # }
-# DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres:///task_manager",
+    ),
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
